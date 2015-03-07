@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -44,37 +44,30 @@
       <Unit1>
         <Filename Value="hparser.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="hparser"/>
       </Unit1>
       <Unit2>
         <Filename Value="hscanner.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="hscanner"/>
       </Unit2>
       <Unit3>
         <Filename Value="htranslator.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="htranslator"/>
       </Unit3>
       <Unit4>
         <Filename Value="decltypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="DeclTypes"/>
       </Unit4>
       <Unit5>
         <Filename Value="bparser.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="bparser"/>
       </Unit5>
       <Unit6>
         <Filename Value="ocparser.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ocparser"/>
       </Unit6>
       <Unit7>
         <Filename Value="declids.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="DeclIds"/>
       </Unit7>
     </Units>
   </ProjectOptions>
@@ -86,7 +79,6 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib/$(TargetCpu)-$(TargetOs)"/>
-      <SrcPath Value="$(LazarusDir)/lcl;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)"/>
     </SearchPaths>
     <Linking>
       <Debugging>
@@ -94,11 +86,7 @@
       </Debugging>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CustomOptions Value="-dVERBOSE"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
