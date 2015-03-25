@@ -2022,7 +2022,7 @@ begin
 
     AddDefine('__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ 30000'); // needed only for iOS 3.0
     //AddDefine('__IPHONE_OS_VERSION_MAX_ALLOWED 50000');
-    AddDefine('__GNUC__ 1');
+    AddDefine('__GNUC__ 4'); // "4" needed for iOS SDK 6.1+
     AddDefine('__OBJC__ 1');
     AddDefine('__STDC__ 1'); // prevent "const" => "__const"
     AddDefine('__APPLE__ 1');
@@ -2053,6 +2053,7 @@ begin
     AddDefine('_OBJC_OBJC_H_'); // we already have translation of objc/objc.h
     //AddDefine('__BLOCKS__ 1'); // must it be "__BLOCKS__ 0"?
     AddDefine('__strong');
+    AddDefine('__builtin_va_list void**');
 
     OnFrameworkReference := @FrameworkReference;
     OnNestedFramework := @NestedFrameworkReference;

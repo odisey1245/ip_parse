@@ -182,7 +182,7 @@ function TTranslator.ParseFramework(framework: string): Boolean;
   end;
 
 var
-  fwd, mfile, unit_name, fwname: string;
+  fwd, mfile, unit_name, fwname, dir: string;
   aparser: TObjCParser;
   newUnit: TStringList;
 begin
@@ -195,9 +195,21 @@ begin
 
   if not FindFrameworkDir(fwd) then
     raise Exception.Create('Could not find directory of "' + framework + '" framework');
-  fwd := FFrameworksPath + fwd + PathDelim + 'Headers' + PathDelim;
-  if not DirectoryExists(fwd) then
-    raise Exception.Create('Headers directory "' + fwd + '" not found');
+  dir := FFrameworksPath + fwd + PathDelim + 'Headers' + PathDelim;
+  if not DirectoryExists(dir) then
+  begin
+    // try Versions/C/Headers
+    fwd := FFrameworksPath + fwd + PathDelim + 'Versions' + PathDelim + '%s'
+      + PathDelim + 'Headers' + PathDelim;
+    dir := Format(fwd, ['A']);
+    if not DirectoryExists(dir) then
+    begin
+      dir := Format(fwd, ['C']);
+      if not DirectoryExists(dir) then
+        raise Exception.Create('Headers directory "' + fwd + '" not found');
+    end;
+  end;
+  fwd := dir;
   if not FindMainHeader(fwd, mfile) then
     mfile := fwd + '*.h';
     //raise Exception.Create('Main header file for framework "' + framework + '" not found in ' + fwd);

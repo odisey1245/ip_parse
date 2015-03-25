@@ -728,7 +728,7 @@ begin
   if l.eq('include_next') then
     SkipPreprocessorDirective
   else
-    raise Exception.Create('unexpected directive #' + l.AsString);
+    raise Exception.Create('unrecognized directive #' + l.AsString);
 end;
 
 procedure THeaderScanner.ProcessDefineDirective;
@@ -869,18 +869,11 @@ var
   begin
     Result := F();
     while Assigned(cur_lex)
-    and (cur_lex.eq('&&') or cur_lex.eq('*') or cur_lex.eq('/')) do
+    and (cur_lex.eq('*') or cur_lex.eq('/')) do
     begin
       op := cur_lex;
       cur_lex := p.GetNextLex;
       r := F();
-      if op.eq('&&') then
-      begin
-        if Result.eq('0') or r.eq('0') then
-          Result := MakeLex('0', 1, ltNumber)
-        else
-          Result := MakeLex('1', 1, ltNumber);
-      end else
       if op.eq('*') then
       begin
         s := IntToStr(StrToIntDef(Result.rawData, 1) * StrToIntDef(r.rawData, 1));
@@ -894,17 +887,39 @@ var
     end;
   end;
 
+  function E2(): TLex;
+  var r, op: TLex; s: string;
+  begin
+    Result := T();
+    while Assigned(cur_lex) and (cur_lex.eq('+') or cur_lex.eq('-')) do
+    begin
+      op := cur_lex;
+      cur_lex := p.GetNextLex;
+      r := T();
+      if op.eq('+') then
+      begin
+        s := IntToStr(StrToIntDef(Result.rawData, 1) + StrToIntDef(r.rawData, 1));
+        Result := MakeLex(PChar(s), Length(s), ltNumber)
+      end else
+      //if op.eq('-') then
+      begin
+        s := IntToStr(StrToIntDef(Result.rawData, 1) - StrToIntDef(r.rawData, 1));
+        Result := MakeLex(PChar(s), Length(s), ltNumber)
+      end;
+    end;
+  end;
+
   function E1(): TLex;
   var r, op: TLex;
   begin
-    Result := T();
+    Result := E2();
     if not Assigned(cur_lex) then Exit;
     if cur_lex.eq('==') or cur_lex.eq('!=') or cur_lex.eq('<')
     or cur_lex.eq('<=') or cur_lex.eq('>') or cur_lex.eq('>=') then
     begin
       op := cur_lex;
       cur_lex := p.GetNextLex;
-      r := T();
+      r := E2();
       if op.eq('==') then
       begin
         if Result.eq(r) then
@@ -950,33 +965,33 @@ var
     end;
   end;
 
-  function E(): TLex;
-  var r, op: TLex; s: string;
+  function E0(): TLex;
+  var r: TLex;
   begin
     Result := E1();
-    while Assigned(cur_lex)
-    and (cur_lex.eq('||') or cur_lex.eq('+') or cur_lex.eq('-')) do
+    while Assigned(cur_lex) and cur_lex.eq('&&') do
     begin
-      op := cur_lex;
       cur_lex := p.GetNextLex;
       r := E1();
-      if op.eq('||') then
-      begin
-        if not Result.eq('0') or not r.eq('0') then
-          Result := MakeLex('1', 1, ltNumber)
-        else
-          Result := MakeLex('0', 1, ltNumber);
-      end else
-      if op.eq('+') then
-      begin
-        s := IntToStr(StrToIntDef(Result.rawData, 1) + StrToIntDef(r.rawData, 1));
-        Result := MakeLex(PChar(s), Length(s), ltNumber)
-      end else
-      //if op.eq('-') then
-      begin
-        s := IntToStr(StrToIntDef(Result.rawData, 1) - StrToIntDef(r.rawData, 1));
-        Result := MakeLex(PChar(s), Length(s), ltNumber)
-      end;
+      if Result.eq('0') or r.eq('0') then
+        Result := MakeLex('0', 1, ltNumber)
+      else
+        Result := MakeLex('1', 1, ltNumber);
+    end;
+  end;
+
+  function E(): TLex;
+  var r: TLex;
+  begin
+    Result := E0();
+    while Assigned(cur_lex) and (cur_lex.eq('||') ) do
+    begin
+      cur_lex := p.GetNextLex;
+      r := E0();
+      if not Result.eq('0') or not r.eq('0') then
+        Result := MakeLex('1', 1, ltNumber)
+      else
+        Result := MakeLex('0', 1, ltNumber);
     end;
   end;
 
