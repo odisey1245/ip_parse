@@ -727,8 +727,19 @@ begin
   end else
   if l.eq('include_next') then
     SkipPreprocessorDirective
-  else
-    raise Exception.Create('unrecognized directive #' + l.AsString);
+  else begin
+    if l.eq('warning') then
+    begin
+      str := '';
+      while not (cc in [#0,#10,#13]) do
+      begin
+        str := str + cc;
+        next_char;
+      end;
+      raise Exception.CreateFmt('%s: warning %s', [FCurFilename, str]);
+    end else
+      raise Exception.Create('unrecognized directive #' + l.AsString);
+  end;
 end;
 
 procedure THeaderScanner.ProcessDefineDirective;
